@@ -30,7 +30,8 @@ twitter_username: YohanRameau
 github_username:  YohanRameau
 
 # Build settings
-theme: minima
+# Remove minima theme as it now a regular theme
+#theme: minima
 plugins:
   - jekyll-feed
 
