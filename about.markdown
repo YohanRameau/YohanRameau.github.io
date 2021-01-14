@@ -10,7 +10,7 @@ Je fais également parti de l'équipe de développement de [la plateforme open-s
 
 ## Pourquoi ce blog ? 
 
-Je souhaite partager et échanger sur l'informatique, le développement et les dernières technologies.
+Ce blog recense mes notes de cours ainsi que mes expériences en tant que développeur, j’espère donc que vous apprendrez des choses en même temps que moi :)
 Avoir des retours et d'autres points de vue est le meilleur moyen de progresser et d'apprendre de nouvelles choses. 
 
 

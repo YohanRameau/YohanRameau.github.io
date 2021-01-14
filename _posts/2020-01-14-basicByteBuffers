@@ -1,0 +1,139 @@
+---
+layout: post
+title:  "Les bases"
+date:   2021-01-13  00:49:08 +0200
+categories: programmation réseau java
+published: false
+---
+
+# Premiers concepts 
+----------------
+## Transmission des données
+
+Du point de vue OS, le bit est la valeur atomique. Pour se transmettre des données on se transmet donc des octets (séquences de 8 bits) Mais des isl peuvent correspondre à plusieurs types de données (chaînes de caractères, nombres etc...) de plusieurs manières (BigEndian, LittleEndian) différentes. C'est pour cette raison qu'il faudra indiquer comment interprêter la séquence d'octets transmise. 
+
+#### BigEndian
+    L'octet de poids fort est en première position
+
+#### LittleEndian  
+    L'octet de poids faible est en première position
+
+#### Charset 
+    Jeux de caractères permet de faire une correspondance entre une séquence d'octet et des caractères. (UTF8, ASCII, etc...)
+
+    En fonction du charset utilisé, une séquence de bits n'aura pas du tout la même signification
+
+## En Java
+
+Historiquement Java manipule les séquences de bits grâce aux *byte array* ``byte[]``
+
+Suite à des problèmes de performances, la librairie java.nio créer les ByteBuffer qui a une implémentation bien plus efficace.
+
+    différence between byte array and bytebuffer
+
+### java.nio : new input/output
+
+Cette librairie permet de gérer la mémoire en dehors du garbage collector ce qui permet un gain de performance.
+
+#### Le java.nio.ByteBuffer
+
+Les ByteBuffer sont les remplaçant des ``byte array``, mais avec une utilisation différentes. Ils ont une taille **fixée** à l'avance.
+
+##### la zone de travail 
+    Correspond à deux indices :
+    1. Position: le premier indice de la zone 
+    2. Limit: le première indice en dehors de la zone. 
+
+##### Création
+
+```java 
+ByteBuffer bb = ByteBuffer.allocate(1024); 
+```
+Le chiffre indiqué à l'allocation est la capacité du ByteBuffer. A ce moment, la *position* est 0 et la *limite* est la capacité.
+
+L'objet est alloué sans passer par la JVM, les entrées/sorties seront donc beaucoup plus efficace mais l'allocation/desallocation sera plus lente.
+
+Il existe une méthode `allocatedirect` pour les ByteBuffer avec une grande durée de vie dans le programme.
+
+##### Accès
+
+    - put(b) On écris un octet à la *position* courante
+    - get() lit et retourne l'octet a la position courante
+  Chaque appel réduit la zone de travail car *position* s'incrémentera.
+  Si la zone de travail est vide `BufferOverFlowException` sera levé. 
+
+##### Ecriture et Lecture
+
+Un buffer est soit en lecture, soit en écriture
+
+- Ecriture: 
+- Lecture: 
+
+###### Flip
+`bb.flip()` permet de passer en mode lecture.
+**limit:=position** and **position=0**
+
+###### Compact
+`bb.compact()` permet de repasser en mode ecriture. Ajoute de nouveaux octets sans perdre la zone de travail.
+
+###### Autre méthode 
+
+- `remaining()` taille de la zone de travail
+- `hasremaining()` permet de savoir si la zone de travail est non vide  
+- `position()` position actuelle
+- `position(int pos)` set pos
+- `limit()` actuel limit
+- `limit(int pos)` set limit
+- `clear()` remet la position a 0 et limit a la taille de depart
+
+##### Méthode pour les types primitif
+
+putInt() écrit 4 octets d'un entier
+getInt() Lit 4 octets d'un entier
+
+L'ordre des short, int, long peuvent être Big/Little Endian
+
+### java.nio.ByteOrder
+Permet d'avoir un comportement standard pour les différents type de systèmes. Par défaut en BigEndian qui est l'ordre le plus utilisé dans les protocoles réseau. Ils peut être modifié par `order(ByteOrder)`
+
+### Encodage and decodage
+
+Les charset comme vu ci-dessus indique un mapping d'un caractère vers un symbole d'octer.
+
+Encodage: Caractère -> Octets
+Décodage: Octets -> Caractères
+
+#### java.nio.charset.Charset
+
+Fournit des méthodes pour encoder et décoder selon un charset donné.
+
+```Java
+
+Charset charset = Charset.forName("UTF-8");
+Charset charset = StandardCharsets.UTF_8;
+ByteBuffer bb = charset.encode(String s);
+ByterBuffer bb 
+```
+L'encodage donne un ByteBuffer de la bonne taille.
+Pour décoder, il est indispensable d'avoir tous les octets.
+
+### FileChannel
+
+Les FileChannel permet de lire et d'écrire des octets depuis un fichier.
+
+#### Lecture 
+
+```Java
+int fc.read(ByteBuffer bb) 
+```
+lit au plus la taille de la zone de travail du ByteBuffer.
+
+`read()` retourne le nombre d'octets lu, -1 si le channel est fermé.
+Il n'y a aucune garantie permettant de s'assurer que le ByteBuffer a été remplit.
+
+#### Ecriture
+
+```Java
+int fc.write(ByteBuffer bb) 
+```
+Ecrit la totalité de la zone de travail du ByteBuffer dans le FileChannel
