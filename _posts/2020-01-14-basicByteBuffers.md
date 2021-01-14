@@ -10,13 +10,13 @@ categories: programmation réseau java
 
 ## Introduction
 
-Nous verrons les différentes implémentation en Java et plus généralement en réseau permettant d'échanger des données via un réseau, avec différentes protocoles (IP, UDP ou TCP) en passant par différentes architectures (serveurs conccurent, entrée/sorties non bloquantes etc).
+Nous verrons les différentes implémentations en Java permettant d'échanger des données via un réseau, avec différentes protocoles (IP, UDP ou TCP) en passant par différentes architectures (serveurs concurrents, entrées/sorties non bloquantes etc).
 
 ## Transmission des données
 
 Du point de vue OS, le bit est la valeur atomique. Pour se transmettre des données on se transmet donc des octets (séquences de 8 bits). 
 
-Mais ces derniers peuvent correspondre à plusieurs types de données (chaînes de caractères, nombres etc...), peuvent être interprétés de plusieurs manières (BigEndian, LittleEndian) différentes et peuvent donc avoir de multiples significations. C'est pour cette raison qu'il faudra indiquer comment interprêter la séquence d'octets transmise.
+Ces derniers peuvent correspondre à plusieurs types de données (chaînes de caractères, nombres etc...), peuvent être interprétés de plusieurs manières (BigEndian, LittleEndian) et peuvent donc avoir de multiples significations. C'est pour cette raison qu'il faudra indiquer comment interprêter la séquence d'octets transmise.
 
 Les différents protocoles réseau, permettent d'indiquer comment traduire une séquence d'octet qui se balade à travers le réseau.
 
@@ -36,24 +36,22 @@ Les différents protocoles réseau, permettent d'indiquer comment traduire une s
 
 Historiquement Java manipule les séquences de bits grâce aux *byte array* ``byte[]``
 
-Suite à des problèmes de performances, la librairie java.nio créer les ByteBuffer qui a une implémentation bien plus efficace.
+Suite à des problèmes de performances, la librairie java.nio permettent d'utiliser les ByteBuffer qui ont une implémentation bien plus efficace.
 
-    différence between byte array and bytebuffer
-
-### java.nio : new input/output
+## java.nio : new input/output
 
 Cette librairie permet de gérer la mémoire en dehors du garbage collector ce qui permet un gain de performance.
 
-#### Le java.nio.ByteBuffer
+### Le java.nio.ByteBuffer
 
 Les ByteBuffer sont les remplaçant des ``byte array``, mais avec une utilisation différentes. Ils ont une taille **fixée** à l'avance et une zone de travail dans lequel s'effectuera différentes actions.
 
-##### la zone de travail 
+### la zone de travail 
     Correspond à deux indices :
     1. Position: le premier indice de la zone 
     2. Limit: le première indice en dehors de la zone. 
 
-##### Création
+### Création
 
 ```java 
 ByteBuffer bb = ByteBuffer.allocate(1024); 
@@ -64,28 +62,26 @@ L'objet est alloué sans passer par la JVM, les entrées/sorties seront donc bea
 
 Il existe une méthode `allocateDirect()` pour les ByteBuffer avec une grande durée de vie dans le programme.
 
-##### Accès
+### Accès
 
     - put(b) On écris un octet à la *position* courante
     - get() lit et retourne l'octet a la position courante
   Chaque appel réduit la zone de travail car *position* s'incrémentera.
   Si la zone de travail est vide `BufferOverFlowException` sera levé. 
 
-##### Ecriture et Lecture
+### Ecriture et Lecture
 
 Un buffer est soit en lecture, soit en écriture
 
-- Ecriture: 
-- Lecture: 
 
-###### Flip
+#### Flip
 `bb.flip()` permet de passer en mode lecture. Les écritures ne sont plus possible dans le BB.
 **limit:=position** and **position=0**
 
-###### Compact
+#### Compact
 `bb.compact()` permet de repasser en mode ecriture. La zone de mémoire est replacé intelligemment afin de ne pas écraser de la mémoire.
 
-###### Autre méthode 
+#### Autre méthode 
 
 - `remaining()` taille de la zone de travail
 - `hasremaining()` permet de savoir si la zone de travail est non vide  
@@ -95,7 +91,7 @@ Un buffer est soit en lecture, soit en écriture
 - `limit(int pos)` set limit
 - `clear()` remet la position a 0 et limit a la taille de depart
 
-##### Méthode pour les types primitif
+#### Méthode pour les types primitif
 
 `putInt()` écrit 4 octets d'un entier au début de la zone de travail avant de la réduire.
 `getInt()` Lit 4 octets d'un entier au début de la zone de travail avant de la réduire.
@@ -150,4 +146,4 @@ Ecrit la totalité de la zone de travail du ByteBuffer dans le FileChannel. Comm
 
 ## Pour conclure
 
-Java fournit pas mal de méthode pour gérer les suites d'octets, le ByteBuffer permet de les manipuler plus aisément et plus efficacement que les byte array. Cependant leurs utilisations différent et ils faut bien savoir gérer la zone de travail et ses modifications après les différentes appel de méthodes.
+Java fournit pas mal de méthode pour gérer les suites d'octets, le ByteBuffer permet de les manipuler plus aisément et plus efficacement que les byte array. Cependant leurs utilisations différent et ils faut bien savoir gérer la zone de travail et ses modifications après les différents appel de méthodes.
