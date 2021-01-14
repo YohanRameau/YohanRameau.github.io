@@ -7,9 +7,18 @@ categories: programmation réseau java
 
 # Premiers concepts 
 ----------------
+
+## Introduction
+
+Nous verrons les différentes implémentation en Java et plus généralement en réseau permettant d'échanger des données via un réseau, avec différentes protocoles (IP, UDP ou TCP) en passant par différentes architectures (serveurs conccurent, entrée/sorties non bloquantes etc).
+
 ## Transmission des données
 
-Du point de vue OS, le bit est la valeur atomique. Pour se transmettre des données on se transmet donc des octets (séquences de 8 bits) Mais des isl peuvent correspondre à plusieurs types de données (chaînes de caractères, nombres etc...) de plusieurs manières (BigEndian, LittleEndian) différentes. C'est pour cette raison qu'il faudra indiquer comment interprêter la séquence d'octets transmise. 
+Du point de vue OS, le bit est la valeur atomique. Pour se transmettre des données on se transmet donc des octets (séquences de 8 bits). 
+
+Mais ces derniers peuvent correspondre à plusieurs types de données (chaînes de caractères, nombres etc...), peuvent être interprétés de plusieurs manières (BigEndian, LittleEndian) différentes et peuvent donc avoir de multiples significations. C'est pour cette raison qu'il faudra indiquer comment interprêter la séquence d'octets transmise.
+
+Les différents protocoles réseau, permettent d'indiquer comment traduire une séquence d'octet qui se balade à travers le réseau.
 
 #### BigEndian
     L'octet de poids fort est en première position
@@ -21,6 +30,7 @@ Du point de vue OS, le bit est la valeur atomique. Pour se transmettre des donn�
     Jeux de caractères permet de faire une correspondance entre une séquence d'octet et des caractères. (UTF8, ASCII, etc...)
 
     En fonction du charset utilisé, une séquence de bits n'aura pas du tout la même signification
+        Par exemple: 61 correspond au caractère a en ASCII alors qu'il n'est associé à aucun caractère en UTF-8
 
 ## En Java
 
@@ -36,7 +46,7 @@ Cette librairie permet de gérer la mémoire en dehors du garbage collector ce q
 
 #### Le java.nio.ByteBuffer
 
-Les ByteBuffer sont les remplaçant des ``byte array``, mais avec une utilisation différentes. Ils ont une taille **fixée** à l'avance.
+Les ByteBuffer sont les remplaçant des ``byte array``, mais avec une utilisation différentes. Ils ont une taille **fixée** à l'avance et une zone de travail dans lequel s'effectuera différentes actions.
 
 ##### la zone de travail 
     Correspond à deux indices :
@@ -52,7 +62,7 @@ Le chiffre indiqué à l'allocation est la capacité du ByteBuffer. A ce moment,
 
 L'objet est alloué sans passer par la JVM, les entrées/sorties seront donc beaucoup plus efficace mais l'allocation/desallocation sera plus lente.
 
-Il existe une méthode `allocatedirect` pour les ByteBuffer avec une grande durée de vie dans le programme.
+Il existe une méthode `allocateDirect()` pour les ByteBuffer avec une grande durée de vie dans le programme.
 
 ##### Accès
 
@@ -69,11 +79,11 @@ Un buffer est soit en lecture, soit en écriture
 - Lecture: 
 
 ###### Flip
-`bb.flip()` permet de passer en mode lecture.
+`bb.flip()` permet de passer en mode lecture. Les écritures ne sont plus possible dans le BB.
 **limit:=position** and **position=0**
 
 ###### Compact
-`bb.compact()` permet de repasser en mode ecriture. Ajoute de nouveaux octets sans perdre la zone de travail.
+`bb.compact()` permet de repasser en mode ecriture. La zone de mémoire est replacé intelligemment afin de ne pas écraser de la mémoire.
 
 ###### Autre méthode 
 
@@ -87,20 +97,21 @@ Un buffer est soit en lecture, soit en écriture
 
 ##### Méthode pour les types primitif
 
-putInt() écrit 4 octets d'un entier
-getInt() Lit 4 octets d'un entier
+`putInt()` écrit 4 octets d'un entier au début de la zone de travail avant de la réduire.
+`getInt()` Lit 4 octets d'un entier au début de la zone de travail avant de la réduire.
 
-L'ordre des short, int, long peuvent être Big/Little Endian
+Ces méthodes existent pour les autres types primitifs.
 
 ### java.nio.ByteOrder
-Permet d'avoir un comportement standard pour les différents type de systèmes. Par défaut en BigEndian qui est l'ordre le plus utilisé dans les protocoles réseau. Ils peut être modifié par `order(ByteOrder)`
+Permet d'avoir un comportement standard pour les différents type de systèmes. Par défaut en BigEndian qui est l'ordre le plus utilisé dans les protocoles réseau. Ils peut être modifié par `order(ByteOrder)`.
+`ByteOrder.nativeOrder()`donne l'ordre utilisé par le système.
 
 ### Encodage and decodage
 
-Les charset comme vu ci-dessus indique un mapping d'un caractère vers un symbole d'octer.
+Les charset comme vu ci-dessus indique un mapping d'un caractère vers un d'octet. La librairie que nous verrons ci dessous permet de les gérer.
 
-Encodage: Caractère -> Octets
-Décodage: Octets -> Caractères
+    Encodage: Caractère -> Octets
+    Décodage: Octets -> Caractères
 
 #### java.nio.charset.Charset
 
@@ -111,7 +122,7 @@ Fournit des méthodes pour encoder et décoder selon un charset donné.
 Charset charset = Charset.forName("UTF-8");
 Charset charset = StandardCharsets.UTF_8;
 ByteBuffer bb = charset.encode(String s);
-ByterBuffer bb 
+CharBuffer cb = charset.decode(ByteBuffer bb);
 ```
 L'encodage donne un ByteBuffer de la bonne taille.
 Pour décoder, il est indispensable d'avoir tous les octets.
@@ -128,11 +139,15 @@ int fc.read(ByteBuffer bb)
 lit au plus la taille de la zone de travail du ByteBuffer.
 
 `read()` retourne le nombre d'octets lu, -1 si le channel est fermé.
-Il n'y a aucune garantie permettant de s'assurer que le ByteBuffer a été remplit.
+Il n'y a aucune garantie permettant de s'assurer que le ByteBuffer a été remplit. Cette méthode est bloquante jusqu'au dernier octet lu. 
 
 #### Ecriture
 
 ```Java
 int fc.write(ByteBuffer bb) 
 ```
-Ecrit la totalité de la zone de travail du ByteBuffer dans le FileChannel
+Ecrit la totalité de la zone de travail du ByteBuffer dans le FileChannel. Comme read, cette méthode est également bloquante et retourne le nombre d'octet écrit.
+
+## Pour conclure
+
+Java fournit pas mal de méthode pour gérer les suites d'octets, le ByteBuffer permet de les manipuler plus aisément et plus efficacement que les byte array. Cependant leurs utilisations différent et ils faut bien savoir gérer la zone de travail et ses modifications après les différentes appel de méthodes.
