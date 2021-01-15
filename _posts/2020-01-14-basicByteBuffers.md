@@ -1,8 +1,9 @@
 ---
 layout: post
 title:  "Programmation Réseau en Java: Les bases"
-date:   2021-01-13  00:49:08 +0200
+date:   2021-01-14  00:49:08 +0200
 categories: programmation réseau java
+tags: programmation réseau java udp
 ---
 
 # Premiers concepts 
@@ -40,11 +41,13 @@ Suite à des problèmes de performances, la librairie java.nio permettent d'util
 
 ## java.nio : new input/output
 
-Cette librairie permet de gérer la mémoire en dehors du garbage collector ce qui permet un gain de performance.
+Cette librairie permet de gérer la mémoire en dehors du garbage collector, directement dans le systême ce qui permet un gain de performance.
 
 ### Le java.nio.ByteBuffer
 
 Les ByteBuffer sont les remplaçant des ``byte array``, mais avec une utilisation différentes. Ils ont une taille **fixée** à l'avance et une zone de travail dans lequel s'effectuera différentes actions.
+
+Ils sont plus rapide que les bytes array mais ils sont plus lent à l'allocation/desalocation car ils pointent vers une zone mémoire du systême et ne sont pas directement gérés par la JVM et le Garbage Collector.
 
 ### la zone de travail 
     Correspond à deux indices :
