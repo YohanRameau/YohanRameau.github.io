@@ -11,7 +11,7 @@ tags: programmation réseau java udp
 
 ## Introduction
 
-Nous verrons les différentes implémentations en Java permettant d'échanger des données via un réseau, avec différentes protocoles (IP, UDP ou TCP) en passant par différentes architectures (serveurs concurrents, entrées/sorties non bloquantes etc).
+Nous verrons les différentes implémentations en Java permettant d'échanger des données via un réseau, avec différents protocoles (IP, UDP ou TCP) et différentes architectures (serveurs concurrents, entrées/sorties non bloquantes etc).
 
 ## Transmission des données
 
@@ -28,7 +28,7 @@ Les différents protocoles réseau, permettent d'indiquer comment traduire une s
     L'octet de poids faible est en première position
 
 #### Charset 
-    Jeux de caractères permet de faire une correspondance entre une séquence d'octet et des caractères. (UTF8, ASCII, etc...)
+    Jeux de caractères permettant de faire une correspondance avec une séquence de bit. (UTF8, ASCII, etc...)
 
     En fonction du charset utilisé, une séquence de bits n'aura pas du tout la même signification
         Par exemple: 61 correspond au caractère a en ASCII alors qu'il n'est associé à aucun caractère en UTF-8
@@ -37,7 +37,7 @@ Les différents protocoles réseau, permettent d'indiquer comment traduire une s
 
 Historiquement Java manipule les séquences de bits grâce aux *byte array* ``byte[]``
 
-Suite à des problèmes de performances, la librairie java.nio permettent d'utiliser les ByteBuffer qui ont une implémentation bien plus efficace.
+Suite à des problèmes de performances, la librairie java.nio a été créée, elle permet d'utiliser des *ByteBuffer*, une classe manipulant les octets bien plus efficacement que les *byte array*.
 
 ## java.nio : new input/output
 
@@ -47,12 +47,13 @@ Cette librairie permet de gérer la mémoire en dehors du garbage collector, dir
 
 Les ByteBuffer sont les remplaçant des ``byte array``, mais avec une utilisation différentes. Ils ont une taille **fixée** à l'avance et une zone de travail dans lequel s'effectuera différentes actions.
 
-Ils sont plus rapide que les bytes array mais ils sont plus lent à l'allocation/desalocation car ils pointent vers une zone mémoire du systême et ne sont pas directement gérés par la JVM et le Garbage Collector.
+Ils sont plus rapide que les bytes array mais ils sont plus lent à l'allocation/desalocation car ils pointent vers une zone mémoire du système et ne sont pas directement gérés par la JVM et le Garbage Collector.
 
 ### la zone de travail 
     Correspond à deux indices :
     1. Position: le premier indice de la zone 
-    2. Limit: le première indice en dehors de la zone. 
+    2. Limit: le première indice en dehors de la zone.
+Les différentes méthodes impliquant des ByteBuffer sont succeptible de modifier la position et/ou la limite. Il faut donc veiller à la cohérence de ces deux indices.  
 
 ### Création
 
@@ -67,22 +68,23 @@ Il existe une méthode `allocateDirect()` pour les ByteBuffer avec une grande du
 
 ### Accès
 
-    - put(b) On écris un octet à la *position* courante
-    - get() lit et retourne l'octet a la position courante
-  Chaque appel réduit la zone de travail car *position* s'incrémentera.
+    - ``ByteBuffer put(Byte b)`` On écrit un octet à la *position* courante 
+    - ``Byte get()`` lit et retourne l'octet a la position courante
+  Un appel à l'une de ces deux méthodes réduira la zone de travail car *position* s'incrémentera.
   Si la zone de travail est vide `BufferOverFlowException` sera levé. 
 
 ### Ecriture et Lecture
 
-Un buffer est soit en lecture, soit en écriture
-
+Un buffer est soit en lecture, soit en écriture.
+Pour passer d'un mode à l'autre, ByteBuffer possède plusieurs méthodes.
 
 #### Flip
-`bb.flip()` permet de passer en mode lecture. Les écritures ne sont plus possible dans le BB.
-**limit:=position** and **position=0**
+`bb.flip()` permet de passer en mode lecture.
+L'indice limite prendra la place de l'indice position et l'indice position sera égale à zéro.
 
 #### Compact
-`bb.compact()` permet de repasser en mode ecriture. La zone de mémoire est replacé intelligemment afin de ne pas écraser de la mémoire.
+`bb.compact()` permet de repasser en mode ecriture. La zone de mémoire est replacé intelligemment afin de ne pas écraser de la mémoire, en effet les données comprise entre la position et la limite vont être déplacé entre la position 0 et la limite qui sera placé à capacity. 
+Toutes les données qui étaient initialement présente ici seront écrasés. 
 
 #### Autre méthode 
 
@@ -102,7 +104,7 @@ Un buffer est soit en lecture, soit en écriture
 Ces méthodes existent pour les autres types primitifs.
 
 ### java.nio.ByteOrder
-Permet d'avoir un comportement standard pour les différents type de systèmes. Par défaut en BigEndian qui est l'ordre le plus utilisé dans les protocoles réseau. Ils peut être modifié par `order(ByteOrder)`.
+Permet d'avoir un comportement standard pour les différents types de système. Par défaut en BigEndian qui est l'ordre le plus utilisé dans les protocoles réseau. Ils peut être modifié par `order(ByteOrder)`.
 `ByteOrder.nativeOrder()`donne l'ordre utilisé par le système.
 
 ### Encodage and decodage
@@ -123,8 +125,9 @@ Charset charset = StandardCharsets.UTF_8;
 ByteBuffer bb = charset.encode(String s);
 CharBuffer cb = charset.decode(ByteBuffer bb);
 ```
-L'encodage donne un ByteBuffer de la bonne taille.
-Pour décoder, il est indispensable d'avoir tous les octets.
+L'encodage retourne un ByteBuffer contenant l'encodage selon le charset donné.
+
+Pour décoder, il est indispensable d'avoir un ByteBuffer contenant tous les octets de l'encodage. Sinon le message ne sera pas correctement traduit.
 
 ### FileChannel
 
