@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Rendu en images de synthèse : Introduction"
+title:  "Rendu en images de synthèse : Lancer de rayon"
 date:   2021-01-19  22:00:08 +0200
 categories: Informatique Rendu Traitement Image Cpp Ray Tracing
 tags: Informatique Rendu Traitement Image Cpp Ray Tracing
