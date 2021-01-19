@@ -1,9 +1,10 @@
 ---
 layout: post
-title:  "Programmation en C++: Introduction"
+title:  "Programmation en C++: Les classes"
 date:   2021-01-17  18:00:00 +0100
 categories: programmation cpp
-tags: programmation cpp
+tags: programmation cpp classe objet
+published: false
 ---
 
 # Les classes en Cpp
