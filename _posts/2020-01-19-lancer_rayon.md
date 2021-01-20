@@ -15,7 +15,7 @@ Aussi appelé **Ray Tracing** c'est un algorithme visant l'illumination globale 
 On suit les photons pour voir où ils rebondissent et connaître la couleur des objets que les rayons rencontrent, il est fondé principalement sur l'intersection des rayons et de la géométrie. C'est un algorithme qui n'est généralement pas en temps réel. 
 
 Le rayon est lancé depuis la caméra vers un pixel et lorsque l'on rencontre un objet sa couleur peut être ainsi déterminée, c'est donc un algorithme dont la philosophie est orientée image et dont la complexité va dépendre du nombre de pixel de l'image. Un très grand nombre de pixel nécessitera un plus grand nombre de lancer de rayon.
-
+------------------
 ## L'algorithme
 
 1) Lancer un rayon -> Pour chaque pixel de l'image
@@ -48,7 +48,7 @@ On va calculer l'éclairement pour chaque source de lumière de la scène.
 Pour le lancer de rayon il est facile d'ajouter l'ombrage : on tire un rayon d'un point de lumière de la scène vers un point d'intersection et on regarde s'il est intercepté par des objets de la scène. S'il ne l'intercepte pas il y a une ombre.
 
 On peut aussi suivre des directions de reflexions spéculaire pures (miroir) et les directions de transmission (sphère mettalique non opaque).
-
+----------------------------------------
 ## Conclusion
 
 Le lancer de rayon est un algorithme dont la philosophie est orienté **image** et qui est lié à chaque pixel. Ainsi, la complexité de l'algorithme peut-être relativement élevé bien qu'il existe des structures de données permettant d'accélerer l'algorithme. 
