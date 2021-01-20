@@ -7,7 +7,6 @@ tags: programmation cpp classe objet
 published: false
 ---
 
-# Les classes en Cpp
 
 ## Introduction
 

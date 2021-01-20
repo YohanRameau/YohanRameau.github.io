@@ -7,8 +7,6 @@ tags: programmation cpp classe objet
 published: false
 ---
 
-# La surcharge
-
 ## Définition
 
 En programmation, la surcharge est un mécanisme permettant de donner plusieurs **définitions** différentes à un même **identificateur**. 

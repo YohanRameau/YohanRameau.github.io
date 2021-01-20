@@ -5,7 +5,7 @@ date:   2021-01-19  22:00:08 +0200
 categories: Informatique Rendu Traitement Image Cpp rasterisation
 tags: Informatique Rendu Traitement Image Cpp Ray rasterisation
 ---
-# La rasterisation
+
 --------------
 
 ## Définition

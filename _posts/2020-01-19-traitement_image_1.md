@@ -6,7 +6,6 @@ categories: Informatique Rendu Traitement Image Cpp
 tags: Informatique Rendu Traitement Image Cpp
 ---
 
-# Introduction du rendu en image de synthèse.*
 ------------------------------
 ## Définition 
 
