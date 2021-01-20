@@ -72,4 +72,4 @@ OpenGL ou Direct3D permet de réaliser rapidement une image de synthèse en s'ap
 
 ## Pour conclure
 
-La rasterisation est un algorithme basé sur la projection de primitives graphiques 
+La rasterisation est un algorithme basé sur la projection de primitives graphiques. Ces primitives sont analysés par l'algorithme puis traité pour déterminer leurs profondeurs et s'il subissent de l'occlusion ou non. La complexité de cette algorithme est fortement lié au nombre de polygones constituant la scène.
